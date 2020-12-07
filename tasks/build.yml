@@ -1,0 +1,75 @@
+---
+
+- block:
+    - name: install build environment
+      package:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - build-essential
+        - gettext
+        - git
+        - libusb-dev
+
+    - name: create source directory
+      file:
+        path: /usr/src/sane
+        state: directory
+        mode: 0755
+
+    - name: get source code for sane-backends
+      git:
+        # copy the least bit of history possible to get that repo.
+        depth: 1
+        repo: "{{ sane_repository.url }}"
+        version: "{{ sane_repository.branch | default(omit) }}"
+        dest: "{{ sane_src_directory }}"
+        update: true
+
+    - name: configure
+      shell: |
+        cd {{ sane_src_directory }}
+        ./configure \
+          --enable-pnm-backend \
+          --disable-ipv6 \
+          --enable-avahi \
+          --with-usb
+          BACKENDS="net genesys" \
+          PRELOADABLE_BACKENDS="net genesys"
+
+    - name: build
+      shell: |
+        cd {{ sane_src_directory }}
+        make
+        make install
+
+    - name: copy udev rules
+      copy:
+        src: "{{ sane_src_directory }}/tools/udev/libsane.rules"
+        dest: /lib/udev/rules.d/99-libsane.rules
+        remote_src: true
+        mode: 0750
+      notify: udev reload
+
+    - name: remove build environment
+      package:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - build-essential
+        - gettext
+        - git
+        - libusb-dev
+
+    - name: 'remove source directory'
+      file:
+        path: /usr/src/sane
+        state: absent
+        mode: 0755
+
+    - name: remove source code
+      shell: |
+        apt-get autoremove --assume-yes
+        dpkg --purge $(dpkg --get-selections | grep deinstall | cut -f1)
+
+  when: not __stat_present_sane.stat.exists

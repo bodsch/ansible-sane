@@ -1,0 +1,19 @@
+---
+dependencies: []
+
+galaxy_info:
+  author: Bodo Schulz
+  description: ansible role for sane
+  license: Apapche
+  min_ansible_version: 2.9
+  platforms:
+    - name: Debian
+      versions:
+        # 9
+        - etch
+        # 10
+        - buster
+
+  galaxy_tags:
+    - sane
+    - scanning

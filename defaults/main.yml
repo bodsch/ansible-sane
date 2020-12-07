@@ -1,0 +1,26 @@
+---
+
+sane_files:
+  - libsane
+  - libsane-common
+  - libsane-extras
+  - libsane-extras-common
+  - sane
+  - sane-utils
+
+# https://gitlab.com/sane-project/backends
+sane_repository:
+  url: https://salsa.debian.org/debian/sane-backends
+  # branch: master
+
+sane_src_directory: /usr/src/sane/sane-backends
+
+sane_saned_clients:
+  - 127.0.0.1
+  - 192.168.0.20
+  - 192.168.0.30
+#  - 192.168.0.0/24
+
+sane_dll_backends:
+  - net
+  - genesys

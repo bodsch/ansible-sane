@@ -1,0 +1,49 @@
+---
+
+- name: remove installed sane packages
+  package:
+    name: "{{ item }}"
+    state: absent
+  loop:
+    "{{ sane_files }}"
+
+- name: install requierements
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: true
+  loop:
+    - udev
+    - libusb-0.1-4
+
+# get file or directory stats
+- name: 'stat /usr/local/bin/sane-find-scanner'
+  stat:
+    path: /usr/local/bin/sane-find-scanner
+    get_checksum: false
+    get_md5: false
+    get_mime: false
+    get_attributes: false
+  register: __stat_present_sane
+  changed_when: not __stat_present_sane.stat.exists
+
+- include_tasks: build.yml
+  when: not __stat_present_sane.stat.exists
+
+- name: create saned.conf
+  template:
+    src: sane.d/saned.conf.j2
+    dest: /usr/local/etc/sane.d/saned.conf
+    mode: 0750
+
+- name: create net.conf
+  template:
+    src: sane.d/net.conf.j2
+    dest: /usr/local/etc/sane.d/net.conf
+    mode: 0750
+
+- name: create dll.conf
+  template:
+    src: sane.d/dll.conf.j2
+    dest: /usr/local/etc/sane.d/dll.conf
+    mode: 0750
