@@ -1,4 +1,6 @@
 ---
 - name: udev reload
   shell: |
-    udevadm control --reload-rules && udevadm trigger
+    udevadm trigger
+
+# udevadm control --reload-rules

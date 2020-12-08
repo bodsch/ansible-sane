@@ -16,6 +16,27 @@
     - udev
     - libusb-0.1-4
 
+- name: ensure group 'scanner' exists
+  group:
+    name: scanner
+    state: present
+
+- name: ensure user 'saned' exists
+  user:
+    name: saned
+    comment: saned
+    group: scanner
+    shell: /bin/bash
+    home: /home/saned
+
+- name: create source directory
+  file:
+    path: /home/saned/src
+    state: directory
+    owner: saned
+    group: scanner
+    mode: 0750
+
 # get file or directory stats
 - name: 'stat /usr/local/bin/sane-find-scanner'
   stat:

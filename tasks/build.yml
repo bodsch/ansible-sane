@@ -5,17 +5,14 @@
       package:
         name: "{{ item }}"
         state: present
+      no_log: true
       loop:
+        - autoconf-archive
+        - dh-autoreconf
         - build-essential
         - gettext
         - git
         - libusb-dev
-
-    - name: create source directory
-      file:
-        path: /usr/src/sane
-        state: directory
-        mode: 0755
 
     - name: get source code for sane-backends
       git:
@@ -28,14 +25,15 @@
 
     - name: configure
       shell: |
+        export BACKENDS="net genesys"
+        export PRELOADABLE_BACKENDS="net genesys"
         cd {{ sane_src_directory }}
+        [ -f autogen.sh ] && ./autogen.sh
         ./configure \
           --enable-pnm-backend \
           --disable-ipv6 \
           --enable-avahi \
           --with-usb
-          BACKENDS="net genesys" \
-          PRELOADABLE_BACKENDS="net genesys"
 
     - name: build
       shell: |
@@ -55,7 +53,9 @@
       package:
         name: "{{ item }}"
         state: absent
+      no_log: true
       loop:
+        - dh-autoreconf
         - build-essential
         - gettext
         - git
@@ -63,13 +63,13 @@
 
     - name: 'remove source directory'
       file:
-        path: /usr/src/sane
+        path: "{{ sane_src_directory }}"
         state: absent
-        mode: 0755
+      no_log: true
 
-    - name: remove source code
+    - name: clean system and purge deinstalled packages
       shell: |
         apt-get autoremove --assume-yes
         dpkg --purge $(dpkg --get-selections | grep deinstall | cut -f1)
 
-  when: not __stat_present_sane.stat.exists
+  #when: not __stat_present_sane.stat.exists

@@ -8,18 +8,17 @@ sane_files:
   - sane
   - sane-utils
 
-# https://gitlab.com/sane-project/backends
 sane_repository:
+  # upstream
+  # https://gitlab.com/sane-project/backends/-/archive/1.0.31/backends-1.0.31.tar.bz2
+  # url: https://gitlab.com/sane-project/backends
+  # older debian stuff
   url: https://salsa.debian.org/debian/sane-backends
-  # branch: master
+  # branch: 1.0.31
 
-sane_src_directory: /usr/src/sane/sane-backends
+sane_src_directory: /home/saned/src/sane-backends
 
-sane_saned_clients:
-  - 127.0.0.1
-  - 192.168.0.20
-  - 192.168.0.30
-#  - 192.168.0.0/24
+sane_saned_clients: []
 
 sane_dll_backends:
   - net
