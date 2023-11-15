@@ -42,7 +42,7 @@
   stat:
     path: /usr/local/bin/sane-find-scanner
     get_checksum: false
-    get_md5: false
+    get_checksum: false
     get_mime: false
     get_attributes: false
   register: __stat_present_sane
